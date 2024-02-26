@@ -1,2 +1,0 @@
-# specularity
-Interactive Reflection Space 
