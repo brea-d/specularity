@@ -51,6 +51,7 @@ function setup() {
     setupSmileQuestionAnswersField();
     setupLastQuestionAnswerFieldHeader();
     setupLastQuestionAnswerField();
+    
 }
 
 function draw() {
@@ -58,7 +59,28 @@ function draw() {
         goodVibes();
     } else {
         badVibes();
+
     }
+
+    
+}
+
+//gradient bubbles 
+function drawEllipse() {
+    // Set ellipse properties
+    const ellipseSize = 150; // Change size as needed
+    const ellipseColor = '#D3B8E3'; // Change color as needed
+    
+    // Calculate ellipse position
+    const ellipseX = windowWidth*0.1; // Adjust X position as needed
+    const ellipseY = windowHeight / 1.4; // Adjust Y position as needed
+    
+    // Draw the ellipse
+    fill(ellipseColor);
+    ellipse(ellipseX, ellipseY, ellipseSize, ellipseSize);
+    noStroke();
+    
+
 }
 
 function draw() {
@@ -66,29 +88,19 @@ function draw() {
       goodVibes();
   } else {
       badVibes();
+      
+      
+    
+
   }
+
+
+  //draw ellipse on top of all other elements 
+  drawEllipse();
   
-  // Draw the square on top of all other elements
-  drawSquare();
 }
 
-// TEST Define a function to draw the square
-function drawSquare() {
-  // Set square properties
-  const squareSize = 100; // Change size as needed
-  const squareColor = '#D3B8E3'; // Change color as needed
-  noStroke();
 
-  // Calculate square position
-  const squareX = 200; // Adjust X position as needed
-  const squareY = 200; // Adjust Y position as needed
-
-  // Draw the square
-  fill(squareColor);
-  rect(squareX, squareY, squareSize, squareSize);
-}
-
-// TEST
 
 
 
@@ -129,9 +141,11 @@ function badVibes() {
     image(video, videoX, videoY);
 }
 
+//webcam
+
 function setupVideo() {
     video = createCapture(VIDEO);
-    video.size(640, 480);
+    video.size(windowWidth/2.5, windowHeight/2.5);
     // video.size(1000, 562);
     video.hide();
 
@@ -163,7 +177,7 @@ function setupResetButton() {
 function setupSmileQuestionSpan() {
     // Question above add comment button - cycles through array
     smileQuestionSpan = createSpan(initialQuestions[currentQuestionIndex]);
-    smileQuestionSpanX = addCommentButtonX - 20;
+    smileQuestionSpanX = addCommentButtonX - windowWidth/30;
     smileQuestionSpanY = addCommentButtonY - 100;
     smileQuestionSpan.position(smileQuestionSpanX, smileQuestionSpanY);
     smileQuestionSpan.id("smileQuestionSpan");
