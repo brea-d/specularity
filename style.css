@@ -99,15 +99,4 @@
   transform: translateY(0);
 }
 
-/*Hide the white border plus scrollbars*/
-body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden; 
-}
-
-/* Make sure the canvas fills the screen */
-canvas {
-  display: block; 
-} 
 
