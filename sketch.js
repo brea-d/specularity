@@ -30,17 +30,16 @@ let smileQuestionAnswers;
 let fadeSmileQuestionAnswersFieldInAndOutInterval;
 
 let initialQuestions = [
-    "What made you smile today?",
-    "What's been on your mind?",
-    "What's one challenge you've overcome in the past year?",
-    "What was your happiest moment?",
-    "If you could talk to yourself from 2 years ago, what would you say?"
-];
+    "What made you smile today?"
+]
 
 let currentQuestionIndex = 0; // Keeps track of the current question index
 
 function setup() {
     canvas = createCanvas(windowWidth, windowHeight);
+
+    // div parent to position in front of bg image
+    canvas.parent('sketch-holder');
 
     setupVideo();
     setupCommentButton();
@@ -125,8 +124,12 @@ function goodVibes() {
 // Before answering what made one smile - greyscale
 function badVibes() {
     // initial bg grey color
-    background(50);
-    canvas.class('greyscale');
+    // background(50);
+    // canvas.class('greyscale');
+
+    // custom bg image
+    document.getElementById('sketch-holder').style.backgroundImage="url(assets/bg-test-1.png)";
+    document.getElementById('sketch-holder').style.backgroundSize = "window.innerHeight, window.innerWidth";
 
     document.getElementById('addCommentButton').style.display = 'block';
     document.getElementById('smileQuestionSpan').style.display = 'block';
