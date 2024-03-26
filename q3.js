@@ -30,7 +30,7 @@ let smileQuestionAnswers;
 let fadeSmileQuestionAnswersFieldInAndOutInterval;
 
 let initialQuestions = [
-    "What made you smile today?"
+    "What did you think of when you woke up today?"
 ]
 
 let currentQuestionIndex = 0; // Keeps track of the current question index
@@ -64,23 +64,7 @@ function draw() {
     
 }
 
-//gradient bubbles 
-// function drawEllipse() {
-//     // Set ellipse properties
-//     const ellipseSize = 150; // Change size as needed
-//     const ellipseColor = 'hsl(0, 0%, 100%)'; // Change color as needed
-    
-//     // Calculate ellipse position
-//     const ellipseX = windowWidth*0.1; // Adjust X position as needed
-//     const ellipseY = windowHeight / 1.4; // Adjust Y position as needed
-    
-//     // Draw the ellipse
-//     fill(ellipseColor);
-//     ellipse(ellipseX, ellipseY, ellipseSize, ellipseSize);
-//     noStroke();
-    
 
-// }
 
 function draw() {
   if (vibeState == true) {
@@ -94,8 +78,6 @@ function draw() {
   }
 
 
-  //draw ellipse on top of all other elements 
-//   drawEllipse();
   
 }
 
@@ -180,7 +162,7 @@ function setupResetButton() {
 function setupSmileQuestionSpan() {
     // Question above add comment button - cycles through array
     smileQuestionSpan = createSpan(initialQuestions[currentQuestionIndex]);
-    smileQuestionSpanX = addCommentButtonX - windowWidth/30;
+    smileQuestionSpanX = addCommentButtonX - windowWidth/20;
     smileQuestionSpanY = addCommentButtonY - 100;
     smileQuestionSpan.position(smileQuestionSpanX, smileQuestionSpanY);
     smileQuestionSpan.id("smileQuestionSpan");
@@ -271,8 +253,10 @@ function addCommentHandler() {
 
 function resetHandler() {
     toggleVibeState();
-    // navigate to next question
-    window.location.href = 'q3.html';
+
+      // navigate to next question
+      window.location.href = 'q4.html';
+
     // currentQuestionIndex = (currentQuestionIndex + 1) % initialQuestions.length;
     // let currentQuestion = initialQuestions[currentQuestionIndex];
     // smileQuestionSpan.html(currentQuestion);
