@@ -253,11 +253,16 @@ function addCommentHandler() {
 
 function resetHandler() {
     toggleVibeState();
-    currentQuestionIndex = (currentQuestionIndex + 1) % initialQuestions.length;
-    let currentQuestion = initialQuestions[currentQuestionIndex];
-    smileQuestionSpan.html(currentQuestion);
-    showCorrespondingAnswer(currentQuestion);
+
+      // navigate to next question
+      window.location.href = 'q3.html';
+
+    // currentQuestionIndex = (currentQuestionIndex + 1) % initialQuestions.length;
+    // let currentQuestion = initialQuestions[currentQuestionIndex];
+    // smileQuestionSpan.html(currentQuestion);
+    // showCorrespondingAnswer(currentQuestion);
 }
+
 
 function showCorrespondingAnswer(question) {
     let answer = smileQuestionAnswers.find(item => item.question === question);

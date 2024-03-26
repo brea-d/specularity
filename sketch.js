@@ -272,7 +272,7 @@ function addCommentHandler() {
 function resetHandler() {
     toggleVibeState();
     // navigate to next question
-    window.location.href = 'q3.html';
+    window.location.href = 'q2.html';
     // currentQuestionIndex = (currentQuestionIndex + 1) % initialQuestions.length;
     // let currentQuestion = initialQuestions[currentQuestionIndex];
     // smileQuestionSpan.html(currentQuestion);

@@ -30,7 +30,7 @@ let smileQuestionAnswers;
 let fadeSmileQuestionAnswersFieldInAndOutInterval;
 
 let initialQuestions = [
-    "What did you think of when you woke up today?"
+    "What were you doing one year ago from this moment?"
 ]
 
 let currentQuestionIndex = 0; // Keeps track of the current question index
