@@ -273,10 +273,10 @@ function resetHandler() {
     toggleVibeState();
     // navigate to next question
     window.location.href = 'q2.html';
-    // currentQuestionIndex = (currentQuestionIndex + 1) % initialQuestions.length;
-    // let currentQuestion = initialQuestions[currentQuestionIndex];
-    // smileQuestionSpan.html(currentQuestion);
-    // showCorrespondingAnswer(currentQuestion);
+    currentQuestionIndex = (currentQuestionIndex + 1) % initialQuestions.length;
+    let currentQuestion = initialQuestions[currentQuestionIndex];
+    smileQuestionSpan.html(currentQuestion);
+    showCorrespondingAnswer(currentQuestion);
 }
 
 function showCorrespondingAnswer(question) {
