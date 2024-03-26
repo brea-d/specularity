@@ -203,12 +203,18 @@ function setupSmileQuestionAnswersFieldHeader() {
 }
 
 function setupSmileQuestionAnswersField() {
+    // local storage - where the answers are stored
     smileQuestionAnswers = JSON.parse(localStorage.getItem('smileQuestionAnswers')) || [];
     smileQuestionAnswersField = createSpan("");
     smileQuestionAnswersFieldX = smileQuestionAnswersFieldHeaderX + 1;
     smileQuestionAnswersFieldY = smileQuestionAnswersFieldHeaderY + 30;
     smileQuestionAnswersField.position(smileQuestionAnswersFieldX, smileQuestionAnswersFieldY);
     smileQuestionAnswersField.id('smileQuestionAnswersField');
+}
+
+//show answer depending on the question displayed 
+function showSmileQuestionAnswersCorresponding() {
+
 }
 
 function setupLastQuestionAnswerFieldHeader() {
@@ -227,13 +233,15 @@ function setupLastQuestionAnswerField() {
     lastQuestionAnswerField.id('lastQuestionAnswerField');
 }
 
+//test 
+
 function addCommentHandler() {
-    if (fadeSmileQuestionAnswersFieldInAndOutInterval) { // Reset current fading effect if existent
+    if (fadeSmileQuestionAnswersFieldInAndOutInterval) {
         clearInterval(fadeSmileQuestionAnswersFieldInAndOutInterval);
     }
 
-    let smileQuestionAnswer = document.getElementById('smileQuestionInput').value;
-    if (smileQuestionAnswer.trim() === '') {
+    let smileQuestionAnswer = document.getElementById('smileQuestionInput').value.trim();
+    if (smileQuestionAnswer === '') {
         alert('Please enter a comment');
         return;
     }
@@ -245,28 +253,38 @@ function addCommentHandler() {
     document.getElementById('smileQuestionInput').value = "";
 
     // Add the new comment to the array
-    smileQuestionAnswers.push(smileQuestionAnswer);
-
-    // Shuffle the array so more recent answers will also get shown
-    smileQuestionAnswers = shuffle(smileQuestionAnswers);
+    smileQuestionAnswers.push({ question: initialQuestions[currentQuestionIndex], answer: smileQuestionAnswer });
 
     // Save the updated comments back to local storage
     localStorage.setItem('smileQuestionAnswers', JSON.stringify(smileQuestionAnswers));
 
-    if (smileQuestionAnswers.length >= 2) { // Fading effect makes only sense if there are at least 2 answers
-        fadeSmileQuestionAnswersFieldInAndOut(); // Instant call to not wait 5 seconds until first answer is shown
+    if (smileQuestionAnswers.length >= 2) {
+        fadeSmileQuestionAnswersFieldInAndOut();
         fadeSmileQuestionAnswersFieldInAndOutInterval = setInterval(fadeSmileQuestionAnswersFieldInAndOut, 5000);
-    } else { // If there is only one answer: Just show that one answer
+    } else {
         showSingleAnswerInSmileQuestionAnswersField();
     }
 }
 
 function resetHandler() {
     toggleVibeState();
-    // Changes question to next one in the array when reset button is hit (smileQuestionSpan)
     currentQuestionIndex = (currentQuestionIndex + 1) % initialQuestions.length;
-    smileQuestionSpan.html(initialQuestions[currentQuestionIndex]);
+    let currentQuestion = initialQuestions[currentQuestionIndex];
+    smileQuestionSpan.html(currentQuestion);
+    showCorrespondingAnswer(currentQuestion);
 }
+
+function showCorrespondingAnswer(question) {
+    let answer = smileQuestionAnswers.find(item => item.question === question);
+    if (answer) {
+        document.getElementById('lastQuestionAnswerField').innerHTML = answer.answer;
+    } else {
+        document.getElementById('lastQuestionAnswerField').innerHTML = "";
+    }
+}
+
+
+//test
 
 function toggleVibeState() {
     vibeState = (!vibeState);
