@@ -64,23 +64,7 @@ function draw() {
     
 }
 
-//gradient bubbles 
-// function drawEllipse() {
-//     // Set ellipse properties
-//     const ellipseSize = 150; // Change size as needed
-//     const ellipseColor = 'hsl(0, 0%, 100%)'; // Change color as needed
-    
-//     // Calculate ellipse position
-//     const ellipseX = windowWidth*0.1; // Adjust X position as needed
-//     const ellipseY = windowHeight / 1.4; // Adjust Y position as needed
-    
-//     // Draw the ellipse
-//     fill(ellipseColor);
-//     ellipse(ellipseX, ellipseY, ellipseSize, ellipseSize);
-//     noStroke();
-    
 
-// }
 
 function draw() {
   if (vibeState == true) {
@@ -94,8 +78,6 @@ function draw() {
   }
 
 
-  //draw ellipse on top of all other elements 
-//   drawEllipse();
   
 }
 
