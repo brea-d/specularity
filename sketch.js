@@ -168,16 +168,16 @@ function setupSmileQuestionSpan() {
     smileQuestionSpan.id("smileQuestionSpan");
   }
 
-function setupSmileQuestionInput() {
-    // Answer input field next to question
-    smileQuestionInput = createInput();
-    smileQuestionInputX = smileQuestionSpanX + 40;
-    smileQuestionInputY = smileQuestionSpanY + 40;
-    smileQuestionInput.position(smileQuestionInputX, smileQuestionInputY);
-    smileQuestionInput.id('smileQuestionInput');
-    textAlign(CENTER);
+// function setupSmileQuestionInput() {
+//     // Answer input field next to question
+//     smileQuestionInput = createInput();
+//     smileQuestionInputX = smileQuestionSpanX + 40;
+//     smileQuestionInputY = smileQuestionSpanY + 40;
+//     smileQuestionInput.position(smileQuestionInputX, smileQuestionInputY);
+//     smileQuestionInput.id('smileQuestionInput');
+//     textAlign(CENTER);
 
-}
+// }
 
 function setupSmileQuestionAnswersFieldHeader() {
     smileQuestionAnswersFieldHeader = createSpan("Today's answers:")
