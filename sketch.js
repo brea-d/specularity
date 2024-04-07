@@ -10,8 +10,8 @@ let resetButtonY;
 
 let smileQuestionSpanX;
 let smileQuestionSpanY;
-let smileQuestionInputX;
-let smileQuestionInputY;
+let smileQuestionSpeechInputX;
+let smileQuestionSpeechInputY;
 
 let smileQuestionAnswersFieldHeaderX;
 let smileQuestionAnswersFieldHeaderY;
@@ -25,14 +25,30 @@ let lastQuestionAnswerFieldY;
 
 let smileQuestionAnswersFieldCounter = 0;
 let vibeState = false; // "false" means we start with bad vibes
-let smileQuestionAnswers;
 
 let fadeSmileQuestionAnswersFieldInAndOutInterval;
 
+// "Continuous recognition" (as opposed to one time only)
+let continuous = true;
+// If you want to try partial recognition (faster, less accurate)
+let interimResults = false;
+
+let speechRec;
+
 let initialQuestions = [
-    "What made you smile today?"
+    {'question' : "What made you smile today?",
+    'localStorageKey' : 'smileQuestionAnswers'},
+    {'question' : "What did you think of when you woke up today?",
+    'localStorageKey' : 'wakeUpQuestionAnswers'},
+    {'question' : "What were you doing one year ago from this moment?",
+    'localStorageKey' : 'yearAgoQuestionAnswers'}
 ]
 
+let smileQuestionAnswers = [
+    [],
+    [],
+    []
+];
 let currentQuestionIndex = 0; // Keeps track of the current question index
 
 function setup() {
@@ -45,24 +61,31 @@ function setup() {
     setupCommentButton();
     setupResetButton();
     setupSmileQuestionSpan();
-    setupSmileQuestionInput();
+    setupSmileQuestionSpeechInput();
     setupSmileQuestionAnswersFieldHeader();
     setupSmileQuestionAnswersField();
     setupLastQuestionAnswerFieldHeader();
     setupLastQuestionAnswerField();
-    
+
+    // https://editor.p5js.org/dano/sketches/T-XASCOsa
+    // Create a Speech Recognition object with callback
+    speechRec = new p5.SpeechRec('en-US', gotSpeech);
+
+    // This must come after setting the properties
+    speechRec.start(continuous, interimResults);
 }
 
-function draw() {
-    if (vibeState == true) {
-        goodVibes();
-    } else {
-        badVibes();
-
-    }
-
-    
-}
+//function draw() {
+//    // localStorage.clear();
+//    if (vibeState == true) {
+//        goodVibes();
+//    } else {
+//        badVibes();
+//
+//    }
+//
+//    
+//}
 
 
 
@@ -98,7 +121,7 @@ function goodVibes() {
 
     document.getElementById('addCommentButton').style.display = 'none';
     document.getElementById('smileQuestionSpan').style.display = 'none';
-    document.getElementById('smileQuestionInput').style.display = 'none';
+    document.getElementById('smileQuestionSpeechInput').style.display = 'none';
 
     image(video, videoX, videoY);
 }
@@ -115,7 +138,7 @@ function badVibes() {
 
     document.getElementById('addCommentButton').style.display = 'block';
     document.getElementById('smileQuestionSpan').style.display = 'block';
-    document.getElementById('smileQuestionInput').style.display = 'block';
+    document.getElementById('smileQuestionSpeechInput').style.display = 'block';
 
     document.getElementById('smileQuestionAnswersField').style.display = 'none';
     document.getElementById('smileQuestionAnswersFieldHeader').style.display = 'none';
@@ -161,20 +184,25 @@ function setupResetButton() {
 
 function setupSmileQuestionSpan() {
     // Question above add comment button - cycles through array
-    smileQuestionSpan = createSpan(initialQuestions[currentQuestionIndex]);
+    smileQuestionSpan = createSpan(initialQuestions[currentQuestionIndex].question);
     smileQuestionSpanX = addCommentButtonX - windowWidth/30;
     smileQuestionSpanY = addCommentButtonY - 100;
     smileQuestionSpan.position(smileQuestionSpanX, smileQuestionSpanY);
     smileQuestionSpan.id("smileQuestionSpan");
   }
 
-function setupSmileQuestionInput() {
+  function updateSmileQuestionSpan() {
+    smileQuestionSpan = document.getElementById('smileQuestionSpan');
+    smileQuestionSpan.innerHTML = initialQuestions[currentQuestionIndex].question;
+  }
+
+function setupSmileQuestionSpeechInput() {
     // Answer input field next to question
-    smileQuestionInput = createInput();
-    smileQuestionInputX = smileQuestionSpanX + 40;
-    smileQuestionInputY = smileQuestionSpanY + 40;
-    smileQuestionInput.position(smileQuestionInputX, smileQuestionInputY);
-    smileQuestionInput.id('smileQuestionInput');
+    smileQuestionSpeechInput = createSpan("");
+    smileQuestionSpeechInputX = smileQuestionSpanX + 40;
+    smileQuestionSpeechInputY = smileQuestionSpanY + 40;
+    smileQuestionSpeechInput.position(smileQuestionSpeechInputX, smileQuestionSpeechInputY);
+    smileQuestionSpeechInput.id('smileQuestionSpeechInput');
     textAlign(CENTER);
 
 }
@@ -189,7 +217,7 @@ function setupSmileQuestionAnswersFieldHeader() {
 
 function setupSmileQuestionAnswersField() {
     // local storage - where the answers are stored
-    smileQuestionAnswers = JSON.parse(localStorage.getItem('smileQuestionAnswers')) || [];
+    // smileQuestionAnswers = JSON.parse(localStorage.getItem('smileQuestionAnswers')) || [];
     smileQuestionAnswersField = createSpan("");
     smileQuestionAnswersFieldX = smileQuestionAnswersFieldHeaderX + 1;
     smileQuestionAnswersFieldY = smileQuestionAnswersFieldHeaderY + 30;
@@ -225,7 +253,7 @@ function addCommentHandler() {
         clearInterval(fadeSmileQuestionAnswersFieldInAndOutInterval);
     }
 
-    let smileQuestionAnswer = document.getElementById('smileQuestionInput').value.trim();
+    let smileQuestionAnswer = document.getElementById('smileQuestionSpeechInput').innerHTML.trim();
     if (smileQuestionAnswer === '') {
         alert('Please enter a comment');
         return;
@@ -235,15 +263,26 @@ function addCommentHandler() {
 
     toggleVibeState();
 
-    document.getElementById('smileQuestionInput').value = "";
+    document.getElementById('smileQuestionSpeechInput').innerHTML = "";
 
     // Add the new comment to the array
-    smileQuestionAnswers.push({ question: initialQuestions[currentQuestionIndex], answer: smileQuestionAnswer });
+    // smileQuestionAnswers.push({ question: initialQuestions[currentQuestionIndex], answer: smileQuestionAnswer });
+    // smileQuestionAnswers.push(smileQuestionAnswer);
+
+    // console.log(smileQuestionAnswers[0]);
+    // console.log(smileQuestionAnswers[0]);
+
+    // console.log(smileQuestionAnswers[initialQuestions[currentQuestionIndex].localStorageKey]);
 
     // Save the updated comments back to local storage
-    localStorage.setItem('smileQuestionAnswers', JSON.stringify(smileQuestionAnswers));
+    // localStorage.setItem('smileQuestionAnswers', JSON.stringify(smileQuestionAnswers));
+    smileQuestionAnswers[currentQuestionIndex] = JSON.parse(localStorage.getItem(initialQuestions[currentQuestionIndex].localStorageKey)) || [];
+    smileQuestionAnswers[currentQuestionIndex].push(smileQuestionAnswer);
+    smileQuestionAnswers[currentQuestionIndex] = shuffle(smileQuestionAnswers[currentQuestionIndex]);
+    localStorage.setItem(initialQuestions[currentQuestionIndex].localStorageKey, JSON.stringify(smileQuestionAnswers[currentQuestionIndex]));
+    // localStorage.setItem(initialQuestions[currentQuestionIndex].localStorageKey, JSON.stringify(smileQuestionAnswers));
 
-    if (smileQuestionAnswers.length >= 2) {
+    if (smileQuestionAnswers[currentQuestionIndex].length >= 2) {
         fadeSmileQuestionAnswersFieldInAndOut();
         fadeSmileQuestionAnswersFieldInAndOutInterval = setInterval(fadeSmileQuestionAnswersFieldInAndOut, 5000);
     } else {
@@ -283,21 +322,24 @@ function fadeSmileQuestionAnswersFieldInAndOut() {
     // Display each comment in the comments section
     let smileQuestionAnswersField = document.getElementById('smileQuestionAnswersField');
     smileQuestionAnswersField.setAttribute("class", "text-fade");
-    setTimeout(() => {
-        smileQuestionAnswersField.innerHTML = smileQuestionAnswers[smileQuestionAnswersFieldCounter];
-        smileQuestionAnswersField.setAttribute("class", "text-show");
-    }, 1000)
+    answersToCurrentQuestion = JSON.parse(localStorage.getItem(initialQuestions[currentQuestionIndex].localStorageKey));
+    if (answersToCurrentQuestion && answersToCurrentQuestion.length > 0) {
+        setTimeout(() => {
+            smileQuestionAnswersField.innerHTML = answersToCurrentQuestion[smileQuestionAnswersFieldCounter];
+            smileQuestionAnswersField.setAttribute("class", "text-show");
+        }, 1000)
+    }
 
     smileQuestionAnswersFieldCounter++;
 
-    if (smileQuestionAnswersFieldCounter >= smileQuestionAnswers.length) {
+    if (smileQuestionAnswersFieldCounter >= smileQuestionAnswers[currentQuestionIndex].length) {
         smileQuestionAnswersFieldCounter = 0;
     }
 }
 
 function showSingleAnswerInSmileQuestionAnswersField() {
     let smileQuestionAnswersField = document.getElementById('smileQuestionAnswersField');
-    smileQuestionAnswersField.innerHTML = smileQuestionAnswers[0];
+    smileQuestionAnswersField.innerHTML = smileQuestionAnswers[currentQuestionIndex][0];
 }
 
 // From https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
@@ -321,3 +363,42 @@ function shuffle(array) {
     return array;
 }
 
+// Speech recognized event3
+function gotSpeech() {
+    // Something is there
+    // Get it as a string, you can also get JSON with more info
+    if (speechRec.resultValue) {
+      let said = speechRec.resultString;
+
+    if (said == 'reset') {
+        resetSmileQuestionSpeechInput();
+    } else if (said == 'submit') {
+        addCommentHandler();
+    } else if (said == 'next') {
+        handleNextCommand();
+    } else {
+        updateSmileQuestionSpeechInput(said);
+    }
+    }
+}
+
+function updateSmileQuestionSpeechInput(said) {
+    current_input = document.getElementById('smileQuestionSpeechInput').innerHTML;
+    if (!current_input && said) {
+        document.getElementById('smileQuestionSpeechInput').innerHTML = said;
+    }
+}
+
+function resetSmileQuestionSpeechInput() {
+    document.getElementById('smileQuestionSpeechInput').innerHTML = "";
+}
+
+function handleNextCommand() {
+    currentQuestionIndex += 1;
+    if (currentQuestionIndex >= initialQuestions.length) {
+        currentQuestionIndex = 0;
+    }
+    updateSmileQuestionSpan();
+    resetSmileQuestionSpeechInput();
+    toggleVibeState();
+}
